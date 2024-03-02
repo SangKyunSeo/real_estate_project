@@ -18,3 +18,7 @@ logging:
     org.hibernate:
       type.descriptor.sql: trace #show parameter binding
       SQL: DEBUG
+
+openApi:
+  callBackUrl: "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev"
+  serviceKey: "%2F0SnlHeNzahA4qk3TvRa2ghBhFuIJ8SoPRQnqaWNdxVBkRmtEzUS5hZnY8W9EInCL9Q9LTXOmOHf7zrno%2FeVjA%3D%3D"
