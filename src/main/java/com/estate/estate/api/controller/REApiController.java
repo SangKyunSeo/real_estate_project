@@ -1,7 +1,9 @@
 package com.estate.estate.api.controller;
 
 import com.estate.estate.api.request.RealEstateDealRequest;
-import com.estate.estate.api.service.ApiService;
+import com.estate.estate.api.response.RealEstateDealResponse;
+import com.estate.estate.api.service.REApiService;
+import com.estate.estate.common.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,14 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/openApi")
-public class ApiController {
+public class REApiController {
 
     @Autowired
-    ApiService apiService;
+    REApiService REApiService;
 
     // Api 부동산 실 거래가 요청 컨트롤
-    @GetMapping("/getAll")
-    public void getRealEstateDealList(@RequestBody RealEstateDealRequest request){
-        apiService.getEstateDealList(request);
+    @GetMapping("/getREDeal")
+    public ApiResponse<RealEstateDealResponse> getRealEstateDealList(@RequestBody RealEstateDealRequest request){
+        return ApiResponse.success(REApiService.getEstateDealList(request));
     }
 }

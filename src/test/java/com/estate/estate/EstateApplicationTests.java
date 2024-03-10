@@ -1,8 +1,6 @@
 package com.estate.estate;
 
-import com.estate.estate.api.service.ApiService;
-import org.hibernate.service.spi.InjectService;
-import org.junit.jupiter.api.DisplayName;
+import com.estate.estate.api.service.REApiService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class EstateApplicationTests {
 
     @InjectMocks
-    ApiService apiService;
+    REApiService REApiService;
 
     @Test
     void contextLoads() {

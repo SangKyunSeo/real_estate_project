@@ -3,7 +3,6 @@ package com.estate.estate.api.service;
 import com.estate.estate.api.request.RealEstateDealRequest;
 import com.estate.estate.api.response.RealEstateDeal;
 import com.estate.estate.api.response.RealEstateDealResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -24,23 +23,29 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ApiService {
+public class REApiService {
 
     @Value("${openApi.serviceKey}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl}")
+    @Value("${openApi.RECallBackUrl}")
     private String callBackUrl;
 
+    @Value("${default.api.pageNo}")
+    private int pageNo;
+
+    @Value("${default.api.numOfRows}")
+    private int numOfRows;
+    private static final String RESPONSE = "response";
+
     // Api 부동산 실 거래가 조회 서비스
-    public void getEstateDealList(RealEstateDealRequest request){
+    public RealEstateDealResponse getEstateDealList(RealEstateDealRequest request){
+        log.info("[Api 부동산 실 거래가 조회 요청 파라미터] : " + request);
         HttpURLConnection urlConnection = null;
         InputStream stream = null;
         String streamStr = null;
-        String result = null;
-
         String urlStr = generateUrl(request);
-
+        RealEstateDealResponse response = null;
         try{
             URL url = new URL(urlStr);
             log.info("[URL] : " + url);
@@ -52,8 +57,7 @@ public class ApiService {
             log.info("[XML 데이터] : " + streamStr);
             JSONObject jsonObject = XML.toJSONObject(streamStr.toString());
             log.info("[JSONObject 데이터 ] : " + jsonObject);
-
-            RealEstateDealResponse response = getRealEstateDealResponse(jsonObject);
+            response = getRealEstateDealResponse(jsonObject);
             log.info("[JSON객체 -> Api 응답 객체] : " + response);
 
             if(stream != null) stream.close();
@@ -64,13 +68,14 @@ public class ApiService {
                 urlConnection.disconnect();
             }
         }
+        return response;
     }
     // Api 부동산 실거래 url 생성
     public String generateUrl(RealEstateDealRequest request){
         return callBackUrl
                 + "?serviceKey=" + serviceKey
-//                + "&pageNo=" + request.getPageNo()
-//                + "&numOfRows=" + request.getNumOfRows()
+                + "&pageNo=" + (request.getPageNo() == 0 ? pageNo : request.getPageNo())
+                + "&numOfRows=" + (request.getNumOfRows() == 0 ? numOfRows : request.getNumOfRows())
                 + "&LAWD_CD=" + request.getLawdCd()
                 + "&DEAL_YMD=" + request.getDealYmd();
     }
@@ -107,26 +112,26 @@ public class ApiService {
 
     // JSON 데이터 추출 (resultCode)
     private String getResultCode(JSONObject jsonObject){
-        return jsonObject.getJSONObject("response").getJSONObject("header").getString("resultCode");
+        return jsonObject.getJSONObject(RESPONSE).getJSONObject("header").getString("resultCode");
     }
     // JSON 데이터 추출 (num of rows)
     private int getNumOfRows(JSONObject jsonObject){
-        return jsonObject.getJSONObject("response").getJSONObject("body").getInt("numOfRows");
+        return jsonObject.getJSONObject(RESPONSE).getJSONObject("body").getInt("numOfRows");
     }
 
     // JSON 데이터 추출 (page no)
     private int getPageNo(JSONObject jsonObject){
-        return jsonObject.getJSONObject("response").getJSONObject("body").getInt("pageNo");
+        return jsonObject.getJSONObject(RESPONSE).getJSONObject("body").getInt("pageNo");
     }
 
     // JSON 데이터 추출 (total count)
     private int getTotalCount(JSONObject jsonObject){
-        return jsonObject.getJSONObject("response").getJSONObject("body").getInt("totalCount");
+        return jsonObject.getJSONObject(RESPONSE).getJSONObject("body").getInt("totalCount");
     }
     // JSON 데이터 추출 (items)
     private JSONArray getItems(JSONObject jsonObject){
         return jsonObject
-                .getJSONObject("response")
+                .getJSONObject(RESPONSE)
                 .getJSONObject("body")
                 .getJSONObject("items")
                 .getJSONArray("item");
