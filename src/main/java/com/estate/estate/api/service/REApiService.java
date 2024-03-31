@@ -25,7 +25,7 @@ import java.util.List;
 @Slf4j
 public class REApiService {
 
-    @Value("${openApi.serviceKey}")
+    @Value("${openApi.REserviceKey}")
     private String serviceKey;
 
     @Value("${openApi.RECallBackUrl}")
